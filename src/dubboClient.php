@@ -2,52 +2,63 @@
 namespace dubbo;
 require_once "register.php";
 require_once "invok/invokerDesc.php";
-require_once "invok/protocols/jsonrpc.php";
-use \dubbo\Register;
-use \dubbo\invok\protocols\jsonRPC;
+//require_once "invok/protocols/jsonrpc.php";
 use \dubbo\invok\invokerDesc;
-use \dubbo\invok\protocols;
 
-class dubboClient{
+class dubboClient
+{
     protected $register;
-    protected $protocols;
+    protected $loadedProtocols;
 
-    public function __construct($options=array())
+    public function __construct($options = array())
     {
         $this->register = new Register($options);
     }
 
-    public function getService($serviceName, $version, $group, $protocol = "jsonrpc"){
+    /**
+     * @param $serviceName
+     * @param $version
+     * @param $group
+     * @param string $protocol
+     * @return invok\Invoker
+     */
+    public function getService($serviceName, $version, $group, $protocol = "jsonrpc")
+    {
         $invokerDesc = new InvokerDesc($serviceName, $version, $group);
         $invoker = $this->register->getInvoker($invokerDesc);
-        if(!$invoker){
-            //$invoker = new jsonrpc();
+        if (!$invoker) {
             $invoker = $this->getInvokerByProtocol($protocol);
-            $this->register->register($invokerDesc,$invoker);
+            $this->register->register($invokerDesc, $invoker);
         }
         return $invoker;
     }
 
-    public function getInvokerByProtocol($protocol){
+    public function getInvokerByProtocol($protocol)
+    {
 
-        if(!in_array($protocol, $this->protocols)){
-            foreach( glob( "invok/protocols/*.php" ) as $filename ){
-                $protoName = basename($filename,".php");
-                array_push($this->protocols, $protoName);
-                require_once $filename;
-            } 
+        if (!in_array($protocol, $this->loadedProtocols)) {
+            if (file_exists("invok/protocols/$protocol.php")) {
+                array_push($this->loadedProtocols, $protocol);
+                require_once "invok/protocols/$protocol.php";
+            }
+
+
+//            foreach (glob("invok/protocols/*.php") as $filename) {
+//                $protoName = basename($filename, ".php");
+//                array_push($this->loadedProtocols, $protoName);
+//                require_once $filename;
+//            }
         }
-      
-        if(class_exists("dubbo\invok\protocols\\$protocol")){
-              $class =  new \ReflectionClass("dubbo\invok\protocols\\$protocol");
-              $invoker = $class->newInstanceArgs(array());
-              return $invoker;
-        }else{
+
+        if (class_exists("dubbo\\invok\\protocols\\$protocol")) {
+//            $class = new \ReflectionClass("dubbo\\invok\\protocols\\$protocol");
+//            $invoker = $class->newInstanceArgs(array());
+            $className = "\\dubbo\\invok\\protocols\\$protocol";
+//            return $invoker;
+            return new $className();
+        } else {
             throw new \Exception("can't match the class according to this protocol $protocol");
         }
     }
 
 }
-
-
-?>
