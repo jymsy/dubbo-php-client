@@ -32,7 +32,7 @@ class Register
     public function __construct($options = array())
     {
         $this->config = array_merge($this->config, $options);
-        $this->ip = $_SERVER['SERVER_ADDR'];
+//        $this->ip = $_SERVER['SERVER_ADDR'];
         $this->providersCluster = Cluster::getInstance();
         $this->zookeeper = $this->getZookeeper($this->config['registry_address']);
     }
@@ -93,16 +93,22 @@ class Register
         $providerConfig = array();
         parse_str($schemeInfo['query'], $providerConfig);
 
-        if ($invokerDesc->isMatch($providerConfig['group'], $providerConfig['version'])) {
-            $this->providersCluster->addProvider($invokerDesc, 'http://' . $schemeInfo['host'] . ':' . $schemeInfo['port'], $schemeInfo['scheme']);
-        }
+//        if ($invokerDesc->isMatch($providerConfig['group'], $providerConfig['version'])) {
+//            $this->providersCluster->addProvider($invokerDesc, 'http://' . $schemeInfo['host'] . ':' . $schemeInfo['port'], $schemeInfo['scheme']);
+//        }
+        $this->providersCluster->addProvider($invokerDesc, $schemeInfo['host'] . ':' . $schemeInfo['port'], $schemeInfo['scheme']);
+
     }
 
 
     public function getInvoker($invokerDesc)
     {
         $desc = $invokerDesc->toString();
-        return self::$ServiceMap[$desc];
+        if (isset(self::$ServiceMap[$desc])) {
+            return self::$ServiceMap[$desc];
+        } else {
+            return false;
+        }
     }
 
 

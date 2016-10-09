@@ -8,7 +8,7 @@ use \dubbo\invok\invokerDesc;
 class dubboClient
 {
     protected $register;
-    protected $loadedProtocols;
+    protected $loadedProtocols = array();
 
     public function __construct($options = array())
     {
@@ -37,24 +37,15 @@ class dubboClient
     {
 
         if (!in_array($protocol, $this->loadedProtocols)) {
-            if (file_exists("invok/protocols/$protocol.php")) {
+            $file = __DIR__ . '/invok/protocols/' . $protocol . '.php';
+            if (file_exists($file)) {
                 array_push($this->loadedProtocols, $protocol);
-                require_once "invok/protocols/$protocol.php";
+                require_once($file);
             }
-
-
-//            foreach (glob("invok/protocols/*.php") as $filename) {
-//                $protoName = basename($filename, ".php");
-//                array_push($this->loadedProtocols, $protoName);
-//                require_once $filename;
-//            }
         }
 
         if (class_exists("dubbo\\invok\\protocols\\$protocol")) {
-//            $class = new \ReflectionClass("dubbo\\invok\\protocols\\$protocol");
-//            $invoker = $class->newInstanceArgs(array());
             $className = "\\dubbo\\invok\\protocols\\$protocol";
-//            return $invoker;
             return new $className();
         } else {
             throw new \Exception("can't match the class according to this protocol $protocol");

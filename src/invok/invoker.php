@@ -67,12 +67,14 @@ abstract class Invoker
         $this->url = $this->cluster->getProvider($this->invokerDesc);
 
         $response = $this->callRPC($name, $params);
-        return $this->formatResponse($response);
+        $result = $this->formatResponse($response);
+        $this->close();
+        return $result;
     }
 
-
+    abstract protected function close();
     abstract protected function callRPC($name, $params);
     abstract protected function formatResponse($response);
-    abstract protected function __call($name, $arguments);
+//    abstract protected function __call($name, $arguments);
 }
 
