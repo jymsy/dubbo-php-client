@@ -76,9 +76,8 @@ class Register
         $this->subscribe($invokDesc);
         $invoker->setDesc($invokDesc);
 
-        //
-//        $providerHost = $this->providersCluster->getProvider($invokDesc);
-//        $invoker->setHost(Invoker::genDubboUrl($providerHost, $invokDesc));
+        $providerHost = $this->providersCluster->getProvider($invokDesc);
+        $invoker->setHost($providerHost);
 
         //创建节点
 //        $registerPath = $this->getRegistryPath($invokDesc->getService());

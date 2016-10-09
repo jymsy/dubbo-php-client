@@ -64,7 +64,7 @@ abstract class Invoker
             throw new \Exception('Params must be given as array');
         }
 
-        $this->url = $this->cluster->getProvider($this->invokerDesc);
+//        $this->url = $this->cluster->getProvider($this->invokerDesc);
 
         $response = $this->callRPC($name, $params);
         $result = $this->formatResponse($response);
