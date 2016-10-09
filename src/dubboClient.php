@@ -22,9 +22,9 @@ class dubboClient
      * @param string $protocol
      * @return invok\Invoker
      */
-    public function getService($serviceName, $version, $group, $protocol = "jsonrpc")
+    public function getService($serviceName, $protocol = "thrift")
     {
-        $invokerDesc = new InvokerDesc($serviceName, $version, $group);
+        $invokerDesc = new InvokerDesc($serviceName);
         $invoker = $this->register->getInvoker($invokerDesc);
         if (!$invoker) {
             $invoker = $this->getInvokerByProtocol($protocol);
