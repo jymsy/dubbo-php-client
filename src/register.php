@@ -50,6 +50,9 @@ class Register
         $serviceName = $invokDesc->getService();
 
         $path = $this->getSubscribePath($serviceName);
+        if (!$this->zookeeper->exists($path)) {
+            throw new \Exception("zookeeper path:$path does not exist!");
+        }
         $children = $this->zookeeper->getChildren($path);
         if (count($children) > 0) {
             foreach ($children as $key => $provider) {
@@ -57,6 +60,8 @@ class Register
                 $this->methodChangeHandler($invokDesc, $provider);
             }
             $this->configurators();
+        } else {
+            throw new \Exception("zookeeper does not provide any service");
         }
 
     }
