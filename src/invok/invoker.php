@@ -42,11 +42,6 @@ abstract class Invoker
         $this->invokerDesc = $invokerDesc;
     }
 
-//    public static function genDubboUrl($host, $invokerDesc)
-//    {
-//        return $host . '/' . $invokerDesc->getService();
-//    }
-
     public function toString()
     {
         return __CLASS__;
@@ -66,8 +61,12 @@ abstract class Invoker
 
         $response = $this->callRPC($name, $params);
         $result = $this->formatResponse($response);
-        $this->close();
         return $result;
+    }
+
+    public function __destruct()
+    {
+        $this->close();
     }
 
     abstract protected function close();

@@ -49,6 +49,7 @@ class thrift extends Invoker
         return $response;
     }
 
+
     protected function close()
     {
         $this->transport->close();
