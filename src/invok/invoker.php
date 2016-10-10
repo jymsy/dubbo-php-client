@@ -19,13 +19,13 @@ abstract class Invoker
         $this->cluster = Cluster::getInstance();
     }
 
-    public function setRPCNotification($notification)
-    {
-        empty($notification) ?
-            $this->notification = false
-            :
-            $this->notification = true;
-    }
+//    public function setRPCNotification($notification)
+//    {
+//        empty($notification) ?
+//            $this->notification = false
+//            :
+//            $this->notification = true;
+//    }
 
     public function getCluster()
     {
@@ -42,10 +42,10 @@ abstract class Invoker
         $this->invokerDesc = $invokerDesc;
     }
 
-    public static function genDubboUrl($host, $invokerDesc)
-    {
-        return $host . '/' . $invokerDesc->getService();
-    }
+//    public static function genDubboUrl($host, $invokerDesc)
+//    {
+//        return $host . '/' . $invokerDesc->getService();
+//    }
 
     public function toString()
     {
@@ -63,8 +63,6 @@ abstract class Invoker
         } else {
             throw new \Exception('Params must be given as array');
         }
-
-//        $this->url = $this->cluster->getProvider($this->invokerDesc);
 
         $response = $this->callRPC($name, $params);
         $result = $this->formatResponse($response);

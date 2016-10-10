@@ -32,7 +32,6 @@ class Register
     public function __construct($options = array())
     {
         $this->config = array_merge($this->config, $options);
-//        $this->ip = $_SERVER['SERVER_ADDR'];
         $this->providersCluster = Cluster::getInstance();
         $this->zookeeper = $this->getZookeeper($this->config['registry_address']);
     }
