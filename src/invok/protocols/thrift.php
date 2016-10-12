@@ -2,34 +2,35 @@
 namespace dubbo\invok\protocols;
 require_once dirname(__DIR__) . "/invoker.php";
 require_once __DIR__ . '/Thrift_lib/Thrift/ClassLoader/ThriftClassLoader.php';
-//require_once __DIR__ . '/gen-php/Types.php';
-//require_once __DIR__ . '/gen-php/OrderService.php';
 
 use \dubbo\invok\Invoker;
 use Thrift\ClassLoader\ThriftClassLoader;
 use Thrift\Protocol\TCompactProtocol;
 use Thrift\Transport\TSocket;
 use Thrift\Transport\TFramedTransport;
-use demo\service\api\order\OrderServiceClient;
+//use demo\service\api\order\OrderServiceClient;
 
 
 class thrift extends Invoker
 {
     const GEN_DIR = __DIR__ . '/services';
     protected $transport;
+    protected $serviceNamespace;
+    protected $client;
 
-    public function __construct()
+    public function __construct($service)
     {
         parent::__construct();
+        $this->service = $service;
+        $this->serviceNamespace = '\\ThriftService\\'.$service;
         $loader = new ThriftClassLoader();
         $loader->registerNamespace('Thrift', __DIR__ . '/Thrift_lib');
-        $loader->registerDefinition('demo\service\api\order', self::GEN_DIR);
+        $loader->registerDefinition($this->serviceNamespace, self::GEN_DIR);
         $loader->register();
     }
 
-    protected function callRPC($name, $params)
+    protected function init()
     {
-        var_dump($this->url);
         list($host, $port) = explode(':', $this->url);
         $socket = new TSocket($host, $port);
         $socket->setSendTimeout(5 * 1000);
@@ -37,10 +38,17 @@ class thrift extends Invoker
 
         $this->transport = new TFramedTransport($socket, 1024, 1024);
         $protocol = new TCompactProtocol($this->transport);
-        $client = new OrderServiceClient($protocol);
+        $class = $this->serviceNamespace .'\\' . $this->service . 'Client';
+        $this->client = new $class($protocol);
 
         $this->transport->open();
-        $str = call_user_func_array(array($client, $name), $params);
+
+        $this->initialized = true;
+    }
+
+    protected function callRPC($name, $params)
+    {
+        $str = call_user_func_array(array($this->client, $name), $params);
         return $str;
     }
 

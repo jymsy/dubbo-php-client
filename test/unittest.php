@@ -9,7 +9,7 @@ $options = array(
 );
 
 $dubboCli = new dubboClient($options);
-$testService = $dubboCli->getService('demo.service.api.order.OrderService%24Iface');
+$testService = $dubboCli->getService('demo.service.api.order.OrderService%24Iface', 'OrderService');
 //$ret = $testService->ping("dubbo php client");
 //$ret = $testService->callFunc('hello');
 $ret = $testService->callFunc('getOrder', [1]);

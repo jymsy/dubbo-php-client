@@ -9,6 +9,8 @@ abstract class Invoker
     protected $debug;
     protected $notification = false;
     protected $cluster;
+    protected $service;
+    protected $initialized = false;
 
     public function __construct($url = null, $debug = false)
     {
@@ -18,14 +20,6 @@ abstract class Invoker
         $this->debug;
         $this->cluster = Cluster::getInstance();
     }
-
-//    public function setRPCNotification($notification)
-//    {
-//        empty($notification) ?
-//            $this->notification = false
-//            :
-//            $this->notification = true;
-//    }
 
     public function getCluster()
     {
@@ -59,6 +53,10 @@ abstract class Invoker
             throw new \Exception('Params must be given as array');
         }
 
+        if (!$this->initialized) {
+            $this->init();
+        }
+
         $response = $this->callRPC($name, $params);
         $result = $this->formatResponse($response);
         return $result;
@@ -69,6 +67,7 @@ abstract class Invoker
         $this->close();
     }
 
+    abstract protected function init();
     abstract protected function close();
     abstract protected function callRPC($name, $params);
     abstract protected function formatResponse($response);

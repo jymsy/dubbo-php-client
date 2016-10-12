@@ -22,18 +22,18 @@ class dubboClient
      * @param string $protocol
      * @return invok\Invoker
      */
-    public function getService($serviceName, $protocol = "thrift")
+    public function getService($serviceName, $protocol = "thrift", $service)
     {
         $invokerDesc = new InvokerDesc($serviceName);
         $invoker = $this->register->getInvoker($invokerDesc);
         if (!$invoker) {
-            $invoker = $this->getInvokerByProtocol($protocol);
+            $invoker = $this->getInvokerByProtocol($protocol, $service);
             $this->register->register($invokerDesc, $invoker);
         }
         return $invoker;
     }
 
-    public function getInvokerByProtocol($protocol)
+    public function getInvokerByProtocol($protocol, $service)
     {
 
         if (!in_array($protocol, $this->loadedProtocols)) {
@@ -46,7 +46,7 @@ class dubboClient
 
         if (class_exists("dubbo\\invok\\protocols\\$protocol")) {
             $className = "\\dubbo\\invok\\protocols\\$protocol";
-            return new $className();
+            return new $className($service);
         } else {
             throw new \Exception("can't match the class according to this protocol $protocol");
         }
