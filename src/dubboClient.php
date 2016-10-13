@@ -22,7 +22,7 @@ class dubboClient
      * @param string $protocol
      * @return invok\Invoker
      */
-    public function getService($serviceName, $protocol = "thrift", $service)
+    public function getService($serviceName, $service, $protocol = "thrift")
     {
         $invokerDesc = new InvokerDesc($serviceName);
         $invoker = $this->register->getInvoker($invokerDesc);
