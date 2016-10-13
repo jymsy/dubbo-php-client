@@ -22,7 +22,7 @@ class thrift extends Invoker
     {
         parent::__construct();
         $this->service = $service;
-        $this->serviceNamespace = '\\ThriftService\\'.$service;
+        $this->serviceNamespace = 'ThriftService\\'.$service;
         $loader = new ThriftClassLoader();
         $loader->registerNamespace('Thrift', __DIR__ . '/Thrift_lib');
         $loader->registerDefinition($this->serviceNamespace, self::GEN_DIR);
@@ -40,7 +40,6 @@ class thrift extends Invoker
         $protocol = new TCompactProtocol($this->transport);
         $class = $this->serviceNamespace .'\\' . $this->service . 'Client';
         $this->client = new $class($protocol);
-
         $this->transport->open();
 
         $this->initialized = true;
